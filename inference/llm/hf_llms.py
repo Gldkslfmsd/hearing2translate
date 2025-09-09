@@ -2,6 +2,7 @@ from transformers.models.auto.modeling_auto import AutoModelForCausalLM
 from transformers.models.auto.tokenization_auto import AutoTokenizer
 from transformers.generation.configuration_utils import GenerationConfig
 <<<<<<< HEAD
+<<<<<<< HEAD
 import torch
 
 
@@ -73,6 +74,13 @@ def generate(model_tokenizer_config, model_input):
         generate_ids[0], skip_special_tokens=True, clean_up_tokenization_spaces=False
     ).strip()
 =======
+=======
+from transformers.trainer_utils import set_seed
+import torch
+
+# Set seed for reproducible generation
+set_seed(42)
+>>>>>>> 5bd297a (setting a seed and adding a script for calling infer in a loop)
 
 
 def load_model(model_name):
@@ -133,5 +141,9 @@ def generate(model_tokenizer_config, model_input):
         generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
     )[0]
     
+<<<<<<< HEAD
     return translation
 >>>>>>> 7145533 (merge the model-specific modules into one huggingface text module)
+=======
+    return translation.strip()  # Clean whitespace
+>>>>>>> 5bd297a (setting a seed and adding a script for calling infer in a loop)
