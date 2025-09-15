@@ -45,10 +45,16 @@ python manifests/acl6060-short/generate.py
 - On subsequent runs, new records will be appended to the existing manifest.
 
 ## Expected Output
-The process generates 416 audio files for 4 En-to-X manifest files (German, French, Portuguese, and Chinese).
+The process generates 416 audio files for 4 En-to-X manifest files:
+
+- en-de
+- en-fr
+- en-pt
+- en-zh
+
 
 ```
-.
+${H2T_DATADIR}/
 ├── acl6060-short
 │   └── audio/
 │       └── en/

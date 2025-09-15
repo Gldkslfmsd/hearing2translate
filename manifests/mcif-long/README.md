@@ -35,10 +35,15 @@ The dataset already includes pre-generated manifests.
 There is no need to regenerate them unless you modify the data.
 
 ## Expected Output
-The dataset contains 21 audio files, and manifests are provided for three language pairs: English→German, English→Italian, and English→Chinese.
+The dataset contains 21 audio files, and manifests are provided for three language pairs: 
+
+- en-de
+- en-it
+- en-zh
+
 
 ```
-.
+${H2T_DATADIR}/
 ├── mcif-long
 │   └── audio/
 │       └── en/

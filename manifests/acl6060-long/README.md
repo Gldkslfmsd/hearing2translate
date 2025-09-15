@@ -43,10 +43,16 @@ export H2T_DATADIR='/path/to/data'
 2.	The manifests are already provided. You do not need to regenerate them.
     
 ## Expected Output
-The process produces 5 audio files for 4 En-to-X manifest files (German, French, Portuguese, and Chinese).
+The process produces 5 audio files for 4 En-to-X manifest files:
+
+- en-de
+- en-fr
+- en-pt
+- en-zh
+
 
 ```
-.
+${H2T_DATADIR}/
 ├── acl6060-long
 │   └── audio/
 │       └── en/
