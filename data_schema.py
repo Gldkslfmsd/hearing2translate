@@ -36,3 +36,4 @@ class DatasetType(str, Enum):
     DIALECTACCENT = "accents"
     TERMINOLOGY = "terminology"
     NONNATIVE = "non_native"
+    EMOTION = "emotion"
