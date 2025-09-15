@@ -26,9 +26,6 @@ This document outlines the procedure for downloading and preparing the ACL 60/60
 }
 ```
 
-## Requirements
-`dataset==3.6`
-
 ## Instructions
 
 1. Generate the processed data.

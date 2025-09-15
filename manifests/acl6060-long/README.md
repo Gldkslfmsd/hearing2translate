@@ -26,9 +26,6 @@ We describe the process for downloading and preparing the ACL 60/60 dataset. The
 }
 ```
 
-## Requirements
-
-
 ## Instructions
 
 1. Download and extract the dataset using fetch_data.sh.

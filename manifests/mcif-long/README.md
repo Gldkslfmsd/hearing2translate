@@ -16,9 +16,6 @@ The dataset is released as part of the [GitHub release](https://github.com/sarap
 }
 ```
 
-## Requirements
-
-
 ## Instructions
 
 1.	Download the dataset
