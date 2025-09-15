@@ -42,8 +42,8 @@ The dataset contains 21 audio files, and manifests are provided for three langua
 ├── mcif-long
 │   └── audio/
 │       └── en/
-│           ├── 416.wav
-│           ├── 417.wav
+│           ├── 0.wav
+│           ├── 1.wav
 │           └── ...
 │
 │       └── long_texts/
