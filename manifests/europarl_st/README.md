@@ -1,31 +1,70 @@
 
-# How to use Europarl-ST
+# Europarl-ST
 
-# Task
-- Primary: General Benchmarking (Parlamentary intervantions)
-- Secondary: ...
+## Overview
 
-Can be used for both as short form (sentence level) and document level for dataset. The average intervention is around ~1:40 minutes long, varying across language direction. 
-Here we only support the short form version.
+Europarl-ST is a multilingual speech translation dataset based on European Parliament interventions.
 
+* **Primary Task:** General benchmarking of parliamentary interventions.
+* **Secondary Task:** Other speech translation experiments.
+* Supports **short-form (sentence-level)** usage and **document-level** evaluation, though **only the short-form version** is provided here.
+* Average intervention length: \~1 minute 40 seconds (varies by language direction).
 
-# Dependencies
-No aditional dependencies are needed
+Supported language directions:
 
-# Description
-The `generate.py` script downloads and prepares the dataset from the original upluad for the langs supported by this repo. It needs to download the whole dataset, including training, which is around 20 GBs. Audio data is resampled to 16Hz and changed into .wav for easier processing of later models. You can set ```EUROPARL_ST_PATH``` to the root folder of the Europarl-ST dataset if you already have the dataset downloaded.
+* `en → {es, fr, pt, it, de}`
+* `{es, fr, pt, it, de} → en`
 
-```bash
-python generate.py 
+More information:
+
+* [Official website](https://www.mllp.upv.es/europarl-st/)
+* [IEEE article](https://ieeexplore.ieee.org/document/9054626)
+* [arXiv paper](https://arxiv.org/abs/1911.03167)
+
+```bibtex
+@INPROCEEDINGS{9054626,
+  author={Iranzo-Sánchez, Javier and Silvestre-Cerdà, Joan Albert and Jorge, Javier and Roselló, Nahuel and Giménez, Adrià and Sanchis, Albert and Civera, Jorge and Juan, Alfons},
+  booktitle={ICASSP 2020 - 2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+  title={Europarl-ST: A Multilingual Corpus for Speech Translation of Parliamentary Debates}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={8229-8233},
+  keywords={Training;Adaptation models;Filtering;Pipelines;Europe;Task analysis;Speech processing;speech translation;spoken language translation;automatic speech recognition;machine translation;multilingual corpus},
+  doi={10.1109/ICASSP40776.2020.9054626}}
 ```
-# Languages directions
-- en->{es,fr,pt,it,de}
-- {es,fr,pt,it,de}->en (Unused)
 
-# Reference and Links
-https://www.mllp.upv.es/europarl-st/
-https://ieeexplore.ieee.org/document/9054626
-https://arxiv.org/abs/1911.03167
+---
 
-# License
-The europarl-ST dataset was released under a NonCommercial 4.0 International license.
+## Instructions
+
+1. Run the `generate.py` script to download and prepare the dataset:
+
+   ```bash
+   python generate.py
+   ```
+
+2. The script will:
+
+   * Download the full dataset (\~20 GB, including training data).
+   * Resample audio to 16 Hz.
+   * Convert audio to `.wav` format for easier downstream processing and segmentantion
+
+3. If you already have the dataset downloaded, set the environment variable `EUROPARL_ST_PATH` to the root folder:
+
+   ```bash
+   export EUROPARL_ST_PATH=/path/to/europarl-st
+   ```
+
+---
+
+## Expected Output
+
+* A fully prepared Europarl-ST dataset in `.wav` format at 16 Hz uder the `europarl_st/audio` folder
+* Directory structure compatible with supported language directions (`en → {es, fr, pt, it, de}` and reverse).
+
+---
+
+## License
+
+The Europarl-ST dataset is released under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** license.
