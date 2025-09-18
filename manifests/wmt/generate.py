@@ -59,7 +59,7 @@ for langs in ["en-de", "en-es", "en-zh", "en-cs", "en-hi", "en-is", "en-ja", "en
             "tgt_ref": text_ref,
             "src_lang": lang1,
             "ref_lang": lang2,
-            "benchmark_metadata": {"doc_id": doc_id, "dataset_type": "longform"},
+            "benchmark_metadata": {"doc_id": doc_id},
         })
 
 
@@ -102,7 +102,7 @@ for langs in ["en-zh_CN", "en-uk_UA", "en-ru_RU", "en-ko_KO", "en-ja_JP", "en-is
             "tgt_ref": line["tgt_text"]["refA"],
             "src_lang": lang1,
             "ref_lang": lang2,
-            "benchmark_metadata": {"doc_id": line["doc_id"], "dataset_type": "longform"},
+            "benchmark_metadata": {"doc_id": line["doc_id"]},
         })
 
 
