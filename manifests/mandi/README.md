@@ -21,7 +21,17 @@ The corpus was collected remotely using participant-controlled smartphone record
 
 ## Instructions
 
-**To get the Audio for manifest**
+**To use the prepared data directly**
+
+Get the data from the relevant release by installing github cli (https://cli.github.com/) and running the following:
+
+```bash
+gh release download  data-share-mandi --repo sarapapi/hearing2translate 
+```
+
+Move the folder to `$H2T_DATADIR/mandi/audio` and proceed.
+
+**To reproduce the manifest creation**
 
 Download the data from:
 
@@ -40,8 +50,6 @@ Run the Python script to generate the processed data:
 ```bash
 python generate.py --in_dir="<PATH TO DOWNLOADED OSF DIRECTORY>"
 ```
-
-
 
 ## Expected Output
 

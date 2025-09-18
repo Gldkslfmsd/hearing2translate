@@ -70,27 +70,10 @@ The script `generate.py` will build the jsonl files for the following language p
 
 The script `generate.py` will save the test set audio for these langauge pairs and generate the jsonl files in this manifest, but should only be used if the user wants to _reproduce_ these outputs. If they want to directly use them for inference, they can use the already existing jsonl files and download the test sets from a release in this github (see below).
 
-To _reproduce_ the jsonl and audio in this manifest:
 
-Data for three of the source langauges (it, pt, and zh) could be obtained from HuggingFace, but for en, de, es you must download CommonVoice v4 (https://commonvoice.mozilla.org/en/datasets) and put the three directories in the same directory. This directory ("--clip_dir") should contain the subdirectories `en/clips`,`es/clips`, and `de/clips`.
+**To directly use the prepared audio files:**
 
-Once this is done:
-
-Define the path where covost2 will be stored:
-
-```bash
-export H2T_DATADIR=""
-```
-
-Run the python script to generate the jsonl files and save the relevant audio files. 
-
-```bash
-python3 ./generate.py --clip_dir="<CLIP_DIR>"
-```
-
-**To directly use the downloaded audio files:**
-
-Since reproducing the audio download is time consuming, you can also directly access the test sets for running inference in these experiments:
+Since reproducing the audio download is time consuming, you can directly access the test sets for running inference in these experiments:
 
 Get the data from the relevant release by installing github cli (https://cli.github.com/) and running the following:
 
@@ -115,6 +98,24 @@ unzip covost_es.zip
 ```
 
 You can then move the langauge specific audio dir to the expected dir for inference (`${H2T_DATADIR}/covost2/audio/`) and proceed with inference. 
+
+**To _reproduce_ the jsonl and audio in this manifest:**
+
+Data for three of the source langauges (it, pt, and zh) could be obtained from HuggingFace, but for en, de, es you must download CommonVoice v4 (https://commonvoice.mozilla.org/en/datasets) and put the three directories in the same directory. This directory ("--clip_dir") should contain the subdirectories `en/clips`,`es/clips`, and `de/clips`.
+
+Once this is done:
+
+Define the path where covost2 will be stored:
+
+```bash
+export H2T_DATADIR=""
+```
+
+Run the python script to generate the jsonl files and save the relevant audio files. 
+
+```bash
+python3 ./generate.py --clip_dir="<CLIP_DIR>"
+```
 
 ## Expected Output
 
