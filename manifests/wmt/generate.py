@@ -54,7 +54,7 @@ for langs in ["en-de", "en-es", "en-zh", "en-cs", "en-hi", "en-is", "en-ja", "en
         dataset_out[langs].append({
             "dataset_id": "wmt24",
             "sample_id": len(dataset_out[langs]),
-            "src_audio": fname_new.removeprefix(dir_root+"/"),
+            "src_audio": "/" + fname_new.removeprefix(dir_root+"/"),
             "src_ref": text_src,
             "tgt_ref": text_ref,
             "src_lang": lang1,
@@ -97,7 +97,7 @@ for langs in ["en-zh_CN", "en-uk_UA", "en-ru_RU", "en-ko_KO", "en-ja_JP", "en-is
         dataset_out[langs].append({
             "dataset_id": "wmt25",
             "sample_id": len(dataset_out[langs]),
-            "src_audio": wav_file.removeprefix(dir_root+"/"),
+            "src_audio": "/" + wav_file.removeprefix(dir_root+"/"),
             "src_ref": line["src_text"],
             "tgt_ref": line["tgt_text"]["refA"],
             "src_lang": lang1,

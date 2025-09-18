@@ -86,7 +86,7 @@ If your generate.py script writes manifests, you should get JSONL files (one per
 {
     "dataset_id": "wmt24",
     "sample_id": 5,
-    "src_audio": "manifests/wmt/wmt24/audio/-_31PoDRu28_001.wav",
+    "src_audio": "/wmt/audio/-_31PoDRu28_001.wav",
     "src_ref": "Now I need to quickly mention the reactor's name, as it was considered a zero power installation. You see, a zero power nuclear reactor is capable of sustaining a stable fission chain reaction, with no significant increase or decline in the reaction rate. This type of installation is essential to gain practical experience of reactor operation, but can still be deadly if the delicate balance isn't maintained.",
     "tgt_ref": "Ahora tengo que mencionar rápidamente el nombre del reactor, ya que era considerado una instalación de potencia cero. Bien, un reactor nuclear de potencia cero es capaz de mantener una reacción de fisión en cadena estable, sin aumento ni disminución significativa de la velocidad de reacción. Este tipo de instalación es esencial para adquirir experiencia práctica en el funcionamiento de los reactores, pero puede ser mortal si no se mantiene el delicado equilibrio.",
     "src_lang": "en",
