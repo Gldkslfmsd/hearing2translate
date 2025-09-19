@@ -64,6 +64,7 @@ for langs in ["en-de", "en-es", "en-zh"]:
 
 # mock other languages on WMT24 without references
 for langs in ["en-it", "en-fr", "en-pt", "en-nl"]:
+    lang1, lang2 = langs.split("-")
     for line in dataset_out["en-de"]:
         dataset_out[langs].append({
             "dataset_id": line["dataset_id"],
@@ -72,7 +73,7 @@ for langs in ["en-it", "en-fr", "en-pt", "en-nl"]:
             "src_ref": line["src_ref"],
             "tgt_ref": None,
             "src_lang": "en",
-            "ref_lang": None,
+            "ref_lang": lang2,
             "benchmark_metadata": line["benchmark_metadata"],
         })
 
@@ -116,13 +117,14 @@ for langs in ["en-zh_CN", "en-de_DE", "en-it_IT"]:
             "src_ref": line["src_text"],
             "tgt_ref": line["tgt_text"]["refA"] if "refA" in line["tgt_text"] else None,
             "src_lang": lang1,
-            "ref_lang": lang2 if "refA" in line["tgt_text"] else None,
+            "ref_lang": lang2,
             "benchmark_metadata": {"doc_id": line["doc_id"]},
         })
 
 # mock other languages on WMT25 without references
 for langs in ["en-es", "en-fr", "en-pt", "en-nl"]:
     # start where the language ends
+    lang1, lang2 = langs.split("-")
     for line in dataset_out["en-de"][len(dataset_out[langs]):]:
         dataset_out[langs].append({
             "dataset_id": line["dataset_id"],
@@ -131,7 +133,7 @@ for langs in ["en-es", "en-fr", "en-pt", "en-nl"]:
             "src_ref": line["src_ref"],
             "tgt_ref": None,
             "src_lang": "en",
-            "ref_lang": None,
+            "ref_lang": lang2,
             "benchmark_metadata": line["benchmark_metadata"],
         })
 
