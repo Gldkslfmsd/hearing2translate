@@ -74,8 +74,6 @@ def generate_europarl_st():
     else:
         print("Already downloaded and extracted Europarl-ST")
 
-    #for src in {"en"}:
-    #    for tgt in langs - {src}:
     extract_dir = extract_dir / "v1.1"
     lang_pairs = [ ("en", t) for t in langs - {"en"} ]
     for src, tgt in lang_pairs + [(t,s) for s,t in lang_pairs]:
@@ -108,7 +106,7 @@ def generate_europarl_st():
                                     tgt_ref=tgt_ref,
                                     src_lang= src,
                                     tgt_lang= tgt,
-                                    benchmark_metadata={"context" : "short", "doc_id" : audio, "dataset_type" : DatasetType.LONGFORM }
+                                    benchmark_metadata={"context" : "short", "doc_id" : audio, "dataset_type" : DatasetType.STANDARD }
                                 ))
                                 )
                         audio_path = dataset_path / "audio" / src / f"{audio}_{s}_{e}.wav"
@@ -117,6 +115,14 @@ def generate_europarl_st():
                         y, sr = librosa.load(audios.absolute() / f"{audio}.m4a", sr=16_000, mono=True, offset=s, duration=e-s)
                         sf.write(audio_path, y, samplerate=16_000)
                     writer.write_all(samples)
+
+    #Create en-zh pair based on en-de
+    with jsonlines.open(dataset_path/f"en-de.jsonl", mode="r") as reader, \
+            jsonlines.open(dataset_path/f"en-zh.jsonl", mode="w") as writer:
+        samples = []
+        for s in reader:
+            samples.append(s | {"tgt_lang":"zh", "tgt_ref":None})
+        writer.write_all(samples)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
