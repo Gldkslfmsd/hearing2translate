@@ -52,15 +52,18 @@ def generate_europarl_st():
     dataset_id = "europarl_st"
 
     dataset_path = Path(os.environ['H2T_DATADIR']) / dataset_id
+    dataset_path.mkdir(parents=True, exist_ok=True)
     url = "https://www.mllp.upv.es/europarl-st/v1.1.tar.gz"
     filename = dataset_path / Path("v1.1.tar.gz")
     extract_dir = dataset_path / Path("europarl-st-v1.1")
 
     # Download if not already present
     if not filename.exists() and not extract_dir.exists():
+        print(extract_dir)
+        print(filename)
         print("Downloading...")
         with TqdmUpTo(unit = 'B', unit_scale = True, unit_divisor = 1024, miniters = 1, desc = str(filename)) as t:
-            urllib.request.urlretrieve(url, filename, reporthook= t.update_to)
+            urllib.request.urlretrieve(url, str(filename), reporthook= t.update_to)
 
     # Extract if not already extracted
     if not os.path.exists(extract_dir):
