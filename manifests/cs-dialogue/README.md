@@ -33,7 +33,7 @@ The linguistic composition of the dialogue progressed systematically: initially 
   python generate.py
   ```
 > Note: Extracting .tar files may take some time.
-> The script prepares manifests for all target languages without reference translations.
+> The script prepares manifests without reference translations.
 
 ## Expected Outputs
 
@@ -42,30 +42,15 @@ After running the above steps, your directory should look like:
 ```
 ${H2T_DATADIR}/
 └─ cs-dialogue/
-    ├── index
-    │   └── short_wav
-    │       ├── dev
-    │       │   └── ...
-    │       ├── test
-    │       │   ├── text
-    │       │   └── wav.scp
-    │       └── train
-    │           └── ...
-    └── short_wav
-        ├── SCRIPT
-        │   ├── ZH-CN_U0001_S0.txt
-        │   ├── ZH-CN_U0002_S0.txt
-        │   └── ...
-        └── WAVE
-            └── C0
-                ├── ZH-CN_U0001_S0
-                │   ├── ZH-CN_U0001_S0_101.wav
-                │   ├── ZH-CN_U0001_S0_103.wav
-                │   ├── ZH-CN_U0001_S0_105.wav
-                │   └── ...
-                ├── ZH-CN_U0002_S0
-                │   └── ...
-                └── ...
+    ├── audio
+    │   └── zh
+    │       ├── ZH-CN_U0001_S0_101.wav
+    │       ├── ZH-CN_U0001_S0_103.wav
+    │       ├── ZH-CN_U0001_S0_105.wav
+    │       └── ...
+    ├── raw
+    │    └── ...
+    └── zh-en.jsonl
 ```
 
 Manifests will be generated under your chosen output path (e.g., `./manifests/cs-dialogue/`).
@@ -77,7 +62,7 @@ Each entry in the JSONL manifest looks like:
 {
   "dataset_id": "cs-dialogue",
   "sample_id": "<dialogue_id>_<utterance_idx>",
-  "src_audio": "/cs-dialogue/short_wav/WAVE/C0/<dialogue_id>/<dialogue_id>_<utterance_idx>.wav",
+  "src_audio": "/cs-dialogue/audio/zh/<dialogue_id>_<utterance_idx>.wav",
   "src_ref": "<source raw_transcription>",
   "tgt_ref": null,
   "src_lang": "zh",
