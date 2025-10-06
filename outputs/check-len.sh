@@ -20,7 +20,9 @@
 
 # all datasets:
 datasets=$(find -name \*jsonl | sed -r 's@/@ @g' | cut -f 3 -d' ' | sort -u)
-datasets="acl6060-long acl6060-short commonAccent fleurs winoST"
+#datasets="acl6060-long acl6060-short commonAccent fleurs winoST"
+#datasets="commonAccent fleurs"
+datasets="mandi mcif-long mcif-short covost2"
 echo $datasets
 
 my_models="{canary-v2,canary-v2_asr,seamlessm4t,seamlessm4t_asr,whisper,whisper_asr}"
@@ -46,9 +48,7 @@ for d in $datasets ; do
 				len=$(wc -l < $i)
 				if [ $ref_len -eq $len ]; then
 					echo ok $ref_len $len $i
-#					if grep $i x ; then
-#						git add $i
-##					fi
+					git add $i
 				else
 					echo ERROR $ref_len $len $i
 				fi
