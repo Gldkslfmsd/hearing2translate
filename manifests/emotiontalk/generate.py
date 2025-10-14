@@ -105,7 +105,9 @@ def process_emotiontalk_dataset() -> None:
             manifest_file.write(json.dumps(record, ensure_ascii=False) + "\n")
             records_written += 1
 
-    #shutil.copy2(manifest_path, script_manifest_path)
+    if manifest_path.resolve() != script_manifest_path.resolve():
+        shutil.copy2(manifest_path, script_manifest_path)
+
     print(
         f"Successfully created '{manifest_path}' with {records_written} records.\n"
         "Dataset processing finished."
