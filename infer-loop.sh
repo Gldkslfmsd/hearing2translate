@@ -41,7 +41,8 @@ cmd() {
 #for dataset in fleurs commonAccent acl6060-long acl6060-short winoST; do
 #for dataset in fleurs winoST mandi mcif-long mcif-short covost2 ; do
 #for dataset in wmt mexpresso cs-dialogue libristutter ; do
-for dataset in wmt mexpresso cs-dialogue libristutter europarl_st noisy_fleurs_ambient noisy_fleurs_babble emotiontalk; do
+#for dataset in wmt mexpresso cs-dialogue libristutter europarl_st noisy_fleurs_ambient noisy_fleurs_babble emotiontalk; do
+for dataset in cs_fleurs ; do
 
 #for dataset in acl6060 ; do
 	# same with models

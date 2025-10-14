@@ -13,7 +13,7 @@ def generate(model, sample):
         transcriptions = model(sample["sample"], generate_kwargs={"language": src, "task": task}, 
                             # because it doesn't work without
                         chunk_length_s=30, stride_length_s=(5,5) if is_long else (0,0), return_timestamps="word")
-    except TypeError:
+    except (TypeError, IndexError):
         transcriptions = model(sample["sample"], generate_kwargs={"language": src, "task": task}, 
                             # because it doesn't work without
                         chunk_length_s=30, stride_length_s=(5,5) if is_long else (0,0), 
