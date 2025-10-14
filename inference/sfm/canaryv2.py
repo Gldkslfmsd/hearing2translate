@@ -1,4 +1,5 @@
 from nemo.collections.asr.models import ASRModel
+import librosa
 
 def load_model():
     model = ASRModel.from_pretrained(model_name="nvidia/canary-1b-v2")
@@ -10,6 +11,6 @@ def load_model():
 def generate(model, sample):
     src = sample["src_lang"]
     tgt = sample["tgt_lang"]
-    audio_path = sample["sample"]
-    transcriptions = model.transcribe(audio_path, source_lang=src, target_lang=tgt, timestsamps=True)
+    speech, rate = librosa.load(sample["sample"], sr=16000)
+    transcriptions = model.transcribe(speech, source_lang=src, target_lang=tgt, timestsamps=True)
     return transcriptions[0].text
