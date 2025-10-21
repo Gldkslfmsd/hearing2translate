@@ -109,14 +109,14 @@ def process_fleurs_dataset():
                         # Construct the JSON record
                         record = {
                             "dataset_id": "fleurs",
-                            "sample_id": sample_id,
+                            "sample_id": relative_audio_path.split('/')[-1].replace('.wav', ''),
                             "src_audio": f"/{relative_audio_path}",
                             "src_ref": sample["raw_transcription"],
                             "tgt_ref": tgt_transcriptions[sample_id],
                             "src_lang": src_lang,
                             "tgt_lang": tgt_lang,
                             "benchmark_metadata": {
-                                "gender": sample["gender"], "context": "short"
+                                "gender": sample["gender"], "context": "short", "sample_id": sample_id
                             }
                         }
 
