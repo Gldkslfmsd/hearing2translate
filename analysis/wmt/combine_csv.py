@@ -1,16 +1,25 @@
 """
 Combines multiple CSV files together into a single file (grouped by metrics) that can be used in GSheet.
+Optionally also outputs a rendered LaTeX table.
 
-Example usage: python3 analysis/wmt/combine_csv.py -i analysis/wmt/*.csv -o /home/vilda/Downloads/wmt_combined.csv
+Example usage: ```
+python3 analysis/wmt/combine_csv.py \
+    -i analysis/wmt/*.csv \
+    -oc /home/vilda/Downloads/wmt_combined.csv \
+    -ot /home/vilda/Downloads/wmt_combined.tex \
+;
+```
 """
 
 import argparse
 import csv
 import collections
+import statistics
 
 args = argparse.ArgumentParser()
 args.add_argument("-i", "--input", type=str, nargs="+", required=True, help="Input CSV files")
-args.add_argument("-o", "--output", type=str, required=True, help="Output CSV file")
+args.add_argument("-oc", "--output-csv", type=str, required=True, help="Output CSV file")
+args.add_argument("-ot", "--output-tex", type=str, required=False, help="Output TEX file")
 args = args.parse_args()
 
 data = collections.defaultdict(lambda: collections.defaultdict(dict))
@@ -30,7 +39,7 @@ for fname in args.input:
 langs = list(data.keys())
 
 
-with open(args.output, "w") as f:
+with open(args.output_csv, "w") as f:
     def printcsv(*args):
         print(
             *args,
@@ -64,3 +73,102 @@ with open(args.output, "w") as f:
                 for lang in langs
             ]
         )
+
+METRIC_TO_NAME = {
+    "LinguaPy": "LinguaPy",
+    "metricx_qe_score": "MetricX",
+    "xcomet_qe_score": "XCOMET",
+    "QEMetricX_24-Strict-linguapy": "MetricX$^L$",
+    "XCOMET-QE-Strict-linguapy": "XCOMET$^L$",
+}
+
+
+if args.output_tex:
+    with open(args.output_tex, "w") as f:
+        def printtex(*args):
+            print(
+                *args,
+                sep=" & ",
+                file=f,
+                end=" \\\\\n",
+            )
+
+        def color_cell(value, metric):
+            color = {
+                "LinguaPy": "Brown3",
+                "metricx_qe_score": "Chartreuse3",
+                "QEMetricX_24-Strict-linguapy": "Chartreuse3",
+                "xcomet_qe_score": "DarkSlateGray3",
+                "XCOMET-QE-Strict-linguapy": "DarkSlateGray3",
+            }
+
+            s = f"{value:.1f}"
+            if metric in {"LinguaPy"}:
+                color = "Brown3"
+                minv, maxv = 0, -20
+            elif metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy"}:
+                color = "Chartreuse3"
+                minv, maxv = 20, 80
+            elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
+                color = "DarkSlateGray3"
+                minv, maxv = 20, 80
+            color_v = ( (value - minv) / (maxv - minv) ) * 100
+            color_v = max(0, min(100, color_v))
+
+            return f"\\cellcolor{{{color}!{color_v:.0f}}} {s}"
+        
+        print(
+            r"\begin{tabular}{l" + "r" * (len(langs) * len(metrics)) + "}",
+            r"\toprule",
+            file=f,
+        )
+        printtex(
+            "",
+            *[
+                f"\\multicolumn{{{len(langs)}}}{{c}}{{\\bf {METRIC_TO_NAME[metric]}}}"
+                for metric in metrics
+            ]
+        )
+        printtex(
+            "",
+            *[
+                lang
+                for _ in metrics
+                for lang in langs
+            ]
+        )
+        print("\\midrule", file=f)
+
+        # invert and scale metrics
+        for lang in langs:
+            for metric in metrics:
+                if metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy", }:
+                    for system in data[lang].keys():
+                        data[lang][system][metric] = 100-4*data[lang][system][metric]
+                elif metric in {"LinguaPy"}:
+                    for system in data[lang].keys():
+                        data[lang][system][metric] = -data[lang][system][metric]
+                elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
+                    for system in data[lang].keys():
+                        data[lang][system][metric] = 100*data[lang][system][metric]
+
+        # sort systems by average across all metrics
+        # TODO: change to something else
+        system_order = sorted(
+            data[langs[0]].keys(),
+            key=lambda sys: statistics.mean(
+                data[lang][sys][metrics[0]] for lang in langs
+            ),
+            reverse=True,
+        )
+        for system in data[langs[0]].keys():
+            printtex(
+                system.replace("_", r" "),
+                *[
+                    color_cell(data[lang][system][metric], metric)
+                    for metric in metrics
+                    for lang in langs
+                ]
+            )
+
+        print(r"\bottomrule \end{tabular}", file=f)
