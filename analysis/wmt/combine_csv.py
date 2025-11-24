@@ -76,12 +76,39 @@ with open(args.output_csv, "w") as f:
 
 METRIC_TO_NAME = {
     "LinguaPy": "LinguaPy",
-    "metricx_qe_score": "MetricX",
-    "xcomet_qe_score": "XCOMET",
     "QEMetricX_24-Strict-linguapy": "MetricX$^L$",
     "XCOMET-QE-Strict-linguapy": "XCOMET$^L$",
 }
+metrics = METRIC_TO_NAME.keys()
 
+SYSTEM_ORDER = [
+    "whisper",
+    "seamlessm4t",
+    "canary-v2",
+    "owsm4.0-ctc",
+
+    "aya whisper",
+    "gemma whisper",
+    "tower whisper",
+
+    "aya seamlessm4t",
+    "gemma seamlessm4t",
+    "tower seamlessm4t",
+
+    "aya canary-v2",
+    "gemma canary-v2",
+    "tower canary-v2",
+
+    "aya owsm4.0-ctc",
+    "gemma owsm4.0-ctc",
+    "tower owsm4.0-ctc",
+
+    "desta2-8b",
+    "qwen2audio-7b",
+    "phi4multimodal",
+    "voxtral-small-24b",
+    "spirelm",
+]
 
 if args.output_tex:
     with open(args.output_tex, "w") as f:
@@ -118,7 +145,7 @@ if args.output_tex:
             return f"\\cellcolor{{{color}!{color_v:.0f}}} {s}"
         
         print(
-            r"\begin{tabular}{l" + "r" * (len(langs) * len(metrics)) + "}",
+            r"\begin{tabular}{l" + "r" * ((len(langs)+1) * len(metrics)) + "}",
             r"\toprule",
             file=f,
         )
@@ -134,7 +161,7 @@ if args.output_tex:
             *[
                 lang
                 for _ in metrics
-                for lang in langs
+                for lang in langs + [""]
             ]
         )
         print("\\midrule", file=f)
@@ -152,22 +179,17 @@ if args.output_tex:
                     for system in data[lang].keys():
                         data[lang][system][metric] = 100*data[lang][system][metric]
 
-        # sort systems by average across all metrics
-        # TODO: change to something else
         system_order = sorted(
             data[langs[0]].keys(),
-            key=lambda sys: statistics.mean(
-                data[lang][sys][metrics[0]] for lang in langs
-            ),
-            reverse=True,
+            key=lambda k: SYSTEM_ORDER.index(k.replace("_", " ")),
         )
-        for system in data[langs[0]].keys():
+        for system in system_order:
             printtex(
                 system.replace("_", r" "),
                 *[
-                    color_cell(data[lang][system][metric], metric)
+                    color_cell(data[lang][system][metric], metric) if lang != "" else ""
                     for metric in metrics
-                    for lang in langs
+                    for lang in langs + [""]
                 ]
             )
 
