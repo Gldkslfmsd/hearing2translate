@@ -208,8 +208,9 @@ if args.output_tex:
             printtex(
                 system,
                 *[
-                    color_cell(data[lang][system_k][metric],
-                               metric) if lang != "" else ""
+                    "" if lang == "" else
+                    "-" if system_k == "canary-v2" and lang in {"en-zh", "zh-en"} else
+                    color_cell(data[lang][system_k][metric], metric)
                     for metric in metrics
                     for lang in langs + [""]
                 ]
