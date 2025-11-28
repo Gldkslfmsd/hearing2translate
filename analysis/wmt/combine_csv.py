@@ -14,29 +14,50 @@ python3 analysis/wmt/combine_csv.py \
 import argparse
 import csv
 import collections
-import statistics
 
 args = argparse.ArgumentParser()
-args.add_argument("-i", "--input", type=str, nargs="+", required=True, help="Input CSV files")
-args.add_argument("-oc", "--output-csv", type=str, required=True, help="Output CSV file")
-args.add_argument("-ot", "--output-tex", type=str, required=False, help="Output TEX file")
+args.add_argument("-i", "--input", type=str, nargs="+",
+                  required=True, help="Input CSV files")
+args.add_argument("-oc", "--output-csv", type=str,
+                  required=True, help="Output CSV file")
+args.add_argument("-ot", "--output-tex", type=str,
+                  required=False, help="Output TEX file")
 args = args.parse_args()
 
 data = collections.defaultdict(lambda: collections.defaultdict(dict))
 metrics = None
 
 for fname in args.input:
-    langs = fname.split("/")[-1].split(".")[0].split("_", 1)[1].replace("_", "-")
+    langs = fname.split(
+        "/")[-1].split(".")[0].split("_", 1)[1].replace("_", "-")
     with open(fname, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            system = row.pop("system")
+            system = row.pop("system").replace("_", " ")
             data[langs][system] = {k: float(v) for k, v in row.items()}
-            
+
             if metrics is None:
                 metrics = list(row.keys())
 
-langs = list(data.keys())
+
+langs = [
+    x for x in [
+        'en-de',
+        'en-es',
+        'en-fr',
+        'en-it',
+        'en-nl',
+        'en-pt',
+        'en-zh',
+        'de-en',
+        'es-en',
+        'fr-en',
+        'it-en',
+        'pt-en',
+        'zh-en'
+    ]
+    if x in data.keys()
+]
 
 
 with open(args.output_csv, "w") as f:
@@ -47,7 +68,7 @@ with open(args.output_csv, "w") as f:
             file=f,
             end="\n",
         )
-    
+
     printcsv(
         "system",
         *[
@@ -76,39 +97,36 @@ with open(args.output_csv, "w") as f:
 
 METRIC_TO_NAME = {
     "LinguaPy": "LinguaPy",
-    "QEMetricX_24-Strict-linguapy": "MetricX$^L$",
-    "XCOMET-QE-Strict-linguapy": "XCOMET$^L$",
+    "QEMetricX_24-Strict-linguapy": r"\metricxstrictiny",
+    "XCOMET-QE-Strict-linguapy": r"\cometstrictiny",
 }
 metrics = METRIC_TO_NAME.keys()
 
-SYSTEM_ORDER = [
-    "whisper",
-    "seamlessm4t",
-    "canary-v2",
-    "owsm4.0-ctc",
+SYSTEM_TO_NAME = {
+    "whisper": r"\cellcolor{sfmcolor} \whisper",
+    "seamlessm4t": r"\cellcolor{sfmcolor} \seamless",
+    "canary-v2": r"\cellcolor{sfmcolor} \canary",
+    "owsm4.0-ctc": r"\cellcolor{sfmcolor} \owsm",
 
-    "aya whisper",
-    "gemma whisper",
-    "tower whisper",
+    "aya whisper": r"\cellcolor{cascadecolor} \whisperfixed \,+ \aya",
+    "gemma whisper": r"\cellcolor{cascadecolor} \nonefixed \,+ \gemma",
+    "tower whisper": r"\cellcolor{cascadecolor} \nonefixed \,+ \tower",
+    "aya seamlessm4t": r"\cellcolor{cascadecolor} \seamlessfixed \,+ \aya",
+    "gemma seamlessm4t": r"\cellcolor{cascadecolor} \nonefixed \,+ \gemma",
+    "tower seamlessm4t":  r"\cellcolor{cascadecolor} \nonefixed \,+ \tower",
+    "aya canary-v2":  r"\cellcolor{cascadecolor} \canaryfixed \,+ \aya",
+    "gemma canary-v2": r"\cellcolor{cascadecolor} \nonefixed \,+ \gemma",
+    "tower canary-v2": r"\cellcolor{cascadecolor} \nonefixed \,+ \tower",
+    "aya owsm4.0-ctc": r"\cellcolor{cascadecolor} \owsmfixed \,+ \aya",
+    "gemma owsm4.0-ctc": r"\cellcolor{cascadecolor} \nonefixed \,+ \gemma",
+    "tower owsm4.0-ctc": r"\cellcolor{cascadecolor} \nonefixed \,+ \tower",
 
-    "aya seamlessm4t",
-    "gemma seamlessm4t",
-    "tower seamlessm4t",
-
-    "aya canary-v2",
-    "gemma canary-v2",
-    "tower canary-v2",
-
-    "aya owsm4.0-ctc",
-    "gemma owsm4.0-ctc",
-    "tower owsm4.0-ctc",
-
-    "desta2-8b",
-    "qwen2audio-7b",
-    "phi4multimodal",
-    "voxtral-small-24b",
-    "spirelm",
-]
+    "desta2-8b": r"\cellcolor{speechllmcolor}{\desta}",
+    "qwen2audio-7b": r"\cellcolor{speechllmcolor}{\qwenaudio}",
+    "phi4multimodal": r"\cellcolor{speechllmcolor}{\phimultimodal}",
+    "voxtral-small-24b": r"\cellcolor{speechllmcolor}{\voxtral}",
+    "spirelm": r"\cellcolor{speechllmcolor}{\spire}",
+}
 
 if args.output_tex:
     with open(args.output_tex, "w") as f:
@@ -139,11 +157,11 @@ if args.output_tex:
             elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
                 color = "DarkSlateGray3"
                 minv, maxv = 20, 80
-            color_v = ( (value - minv) / (maxv - minv) ) * 100
+            color_v = ((value - minv) / (maxv - minv)) * 100
             color_v = max(0, min(100, color_v))
 
             return f"\\cellcolor{{{color}!{color_v:.0f}}} {s}"
-        
+
         print(
             r"\begin{tabular}{l" + "r" * ((len(langs)+1) * len(metrics)) + "}",
             r"\toprule",
@@ -152,7 +170,7 @@ if args.output_tex:
         printtex(
             "",
             *[
-                f"\\multicolumn{{{len(langs)}}}{{c}}{{\\bf {METRIC_TO_NAME[metric]}}}"
+                f"\\multicolumn{{{len(langs)+1}}}{{c}}{{\\bf {METRIC_TO_NAME[metric]}}}"
                 for metric in metrics
             ]
         )
@@ -171,23 +189,27 @@ if args.output_tex:
             for metric in metrics:
                 if metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy", }:
                     for system in data[lang].keys():
-                        data[lang][system][metric] = 100-4*data[lang][system][metric]
+                        data[lang][system][metric] = 100 - \
+                            4*data[lang][system][metric]
                 elif metric in {"LinguaPy"}:
                     for system in data[lang].keys():
-                        data[lang][system][metric] = -data[lang][system][metric]
+                        data[lang][system][metric] = - \
+                            data[lang][system][metric]
                 elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
                     for system in data[lang].keys():
-                        data[lang][system][metric] = 100*data[lang][system][metric]
+                        data[lang][system][metric] = 100 * \
+                            data[lang][system][metric]
 
-        system_order = sorted(
-            data[langs[0]].keys(),
-            key=lambda k: SYSTEM_ORDER.index(k.replace("_", " ")),
-        )
-        for system in system_order:
+        system_order = [
+            (v, k) for k, v in SYSTEM_TO_NAME.items()
+            if k in data[langs[0]].keys()
+        ]
+        for system, system_k in system_order:
             printtex(
-                system.replace("_", r" "),
+                system,
                 *[
-                    color_cell(data[lang][system][metric], metric) if lang != "" else ""
+                    color_cell(data[lang][system_k][metric],
+                               metric) if lang != "" else ""
                     for metric in metrics
                     for lang in langs + [""]
                 ]
