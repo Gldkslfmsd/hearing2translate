@@ -21,8 +21,8 @@ SYSTEMS = [
     "phi4multimodal",
     "voxtral-small-24b"
 ]
-METRICX = "QEMetricX_24-Strict-linguapy"
-
+#METRICX = "QEMetricX_24-Strict-linguapy"
+METRICX = "metricx_qe_score"
 
 def main(langs, dataset="acl6060"):
     out_df = pd.DataFrame({"system": SYSTEMS})
@@ -55,4 +55,9 @@ def main(langs, dataset="acl6060"):
         out_df = out_df.merge(df_lang, on="system", how="left")
         
     out_df["avg"] = out_df.iloc[:, 1:].mean(axis=1)
-    out_df.to_csv("metricx_diff.csv", index=False)
+    out_df.to_csv("metricx_qe_diff.csv", index=False)
+    print("done")
+    
+if __name__ == "__main__":
+    langs = ["en_de", "en_fr", "en_pt", "en_zh"]
+    main(langs)
