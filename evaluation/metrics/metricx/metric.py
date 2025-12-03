@@ -74,9 +74,9 @@ class BaseMetricX():
             tokens["input_ids"] = tokens["input_ids"][:, :-1]
             tokens["attention_mask"] = tokens["attention_mask"][:, :-1]
 
-            # move tokens to cuda device
-            tokens["input_ids"] = tokens["input_ids"].to("cuda")
-            tokens["attention_mask"] = tokens["attention_mask"].to("cuda")
+            # move tokens to the available device
+            tokens["input_ids"] = tokens["input_ids"].to(self.device)
+            tokens["attention_mask"] = tokens["attention_mask"].to(self.device)
 
             with torch.no_grad():
                 outputs = self.model(**tokens)
