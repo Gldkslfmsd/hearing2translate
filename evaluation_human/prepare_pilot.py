@@ -3,36 +3,36 @@ import json
 import random
 import shutil
 
-os.makedirs("evaluation_human/data_campaign", exist_ok=True)
+os.makedirs("evaluation_human/hearing2translate-v1/", exist_ok=True)
 
-# each "document" is 10 segments
-# we want to have 5 documents
-# and 2 users per language pair
-N_PER_DOC = 10
-N_DOCS = 5
+DOCS_PER_TASK = 60
 USERS = {
-    "en-it": "sara",
-    "en-es": "javi",
-    "en-de": "maikele",
+    "en-it": "enit",
+    "en-es": "enes",
+    "en-de": "ende",
+    "en-pt": "enpt",
+    "en-zh": "enzh",
+    "en-fr": "enfr",
+    "en-nl": "ennl",
+    "de-en": "deen",
+    "es-en": "esen",
+    "it-en": "iten",
+    "pt-en": "pten",
+    "zh-en": "zhen",
 }
-TASKS_PER_LANG = 2
+TASKS_PER_LANG = 3
 MODELS = ["seamlessm4t", "aya_canary-v2", "voxtral-small-24b"]
-DATASET = "mexpresso"
+DATASET = "covost2"
 tasks_users = []
 
-os.makedirs(f"evaluation_human/data_campaign/assets/{DATASET}", exist_ok=True)
+os.makedirs(f"evaluation_human/hearing2translate-v1/assets/{DATASET}", exist_ok=True)
 
 for langs in USERS.keys():
     r_local = random.Random(0)
 
     with open(f"manifests/{DATASET}/{langs}.jsonl", "r") as f:
         data_src_raw = [json.loads(line) for line in f]
-        data_src = []
-        # sample continuous ranges
-        for _ in range(N_DOCS*TASKS_PER_LANG):
-            i = r_local.choice(range(len(data_src_raw)-N_PER_DOC))
-            for _ in range(N_PER_DOC):
-                data_src.append(data_src_raw.pop(i))
+        data_src = data_src_raw[:DOCS_PER_TASK*TASKS_PER_LANG]
 
     data_tgt = {}
     for model in MODELS:
@@ -41,10 +41,9 @@ for langs in USERS.keys():
                 json.loads(line)
                 for line in f
             ]
-            data_tgt[model] = [
-                [item for item in data_tgt[model] if item["sample_id"] == src["sample_id"]][0]
-                for src in data_src
-            ]
+            data_tgt[model] = data_tgt[model][:DOCS_PER_TASK*TASKS_PER_LANG]
+
+            assert all([x["sample_id"] == y["sample_id"] for x, y in zip(data_src, data_tgt[model])]), "Sample IDs do not match!"
 
     # transpose
     data_tgt = [
@@ -55,54 +54,51 @@ for langs in USERS.keys():
         for i in range(len(data_src))
     ]
 
-    tasks = []
-    docs = []
+    tasks_users.append([])
     
     for src, tgts in zip(data_src, data_tgt):
         tgts = list(tgts.items())
         r_local.shuffle(tgts)
-
-        fname0 = f"evaluation_human/data_campaign/mexpresso/{src['src_audio'].split('/')[-1]}"
-        fname1 = f"evaluation_human/data_campaign/assets/{DATASET}/{src['src_audio'].split('/')[-1]}"
+        
+        lang1 = src['src_audio'].split('/')[-2]
+        fname0 = f"manifests/covost2/audio/covost_{lang1}/{lang1}/{src['src_audio'].split('/')[-1]}"
+        fname1 = f"evaluation_human/hearing2translate-v1/assets/{DATASET}/{lang1}/{src['src_audio'].split('/')[-1]}"
 
         if not os.path.exists(fname1):
+            os.makedirs(os.path.dirname(fname1), exist_ok=True)
             shutil.copy(fname0, fname1)
 
-
-        # TODO: move audio to assets
-        docs.append({
+        # each item is a document
+        tasks_users[-1].append([{
             "langs": langs,
-            "sample_id": f"{DATASET}_{src["sample_id"]}",
+            "dataset": DATASET,
+            "sample_id": src["sample_id"],
             "models": [v[0] for v in tgts],
-            "src": f'<audio controls="" src="assets/{DATASET}/{src['src_audio'].split('/')[-1]}"></audio>',
+            "src": f'<audio controls="" src="assets/{DATASET}/{lang1}/{src['src_audio'].split('/')[-1]}"></audio>',
             "tgt": [
                 v[1]["output"]
                 for v in tgts
             ]
-        })
+        }])
 
-        if len(docs) == N_PER_DOC:
-            tasks.append(docs)
-            docs = []
-    if len(docs) > 0:
-        tasks.append(docs)
+        if len(tasks_users[-1]) == DOCS_PER_TASK:
+            tasks_users.append([])
 
-    tasks_users += [
-        tasks[i*N_DOCS:(i+1)*N_DOCS]
-        for i in range(TASKS_PER_LANG)
-    ]
-
+    # filter out empty task
+    tasks_users = [task for task in tasks_users if task]
 
 campaign = {
-    "campaign_id": "pilot",
+    "campaign_id": "hearing2translate-v1",
     "info": {
-        "assets": f"data_campaign/{DATASET}",
+        "assets": {
+            "source": f"hearing2translate-v1/assets/{DATASET}/",
+            "destination": f"assets/{DATASET}/"
+        },
         "template": "listwise",
         "assignment": "task-based",
         "protocol_score": True,
         "protocol_error_spans": True,
         "protocol_error_categories": True,
-        # two for italian, three for spanish, two for german
         "users": [
             user
             for langs in USERS.keys()
@@ -112,5 +108,5 @@ campaign = {
     "data": tasks_users,
 }
 
-with open("evaluation_human/data_campaign/pilot.json", "w") as f:
+with open("evaluation_human/hearing2translate-v1/hearing2translate-v1.json", "w") as f:
     json.dump(campaign, f, indent=2, ensure_ascii=False)
