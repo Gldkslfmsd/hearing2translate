@@ -16,7 +16,7 @@ USERS = {
     "en-de": "maikele",
 }
 TASKS_PER_LANG = 2
-MODELS = ["seamlessm4t", "aya_whisper", "spirelm"]
+MODELS = ["seamlessm4t", "aya_canary-v2", "voxtral-small-24b"]
 DATASET = "mexpresso"
 tasks_users = []
 
@@ -48,7 +48,7 @@ for langs in USERS.keys():
 
     # transpose
     data_tgt = [
-        {
+        { 
             model: data_tgt[model][i]
             for model in MODELS
         }
