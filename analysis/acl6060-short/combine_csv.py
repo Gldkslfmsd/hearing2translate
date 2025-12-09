@@ -3,11 +3,11 @@ Combines multiple CSV files together into a single file (grouped by metrics) tha
 Optionally also outputs a rendered LaTeX table.
 
 Example usage: ```
-python3 analysis/wmt/combine_csv.py \
-    -i analysis/wmt/*.csv \
-    -oc /home/vilda/Downloads/wmt_combined.csv \
-    -ot /home/vilda/Downloads/wmt_combined.tex \
-;
+python3 analysis/acl6060-short/combine_csv.py \
+    -i analysis/acl6060-short/acl6060_*.csv \
+    -oc analysis/acl6060-short/wmt_combined2.csv \
+    -ot analysis/acl6060-short/wmt_combined2.tex
+
 ```
 """
 
@@ -201,20 +201,6 @@ if args.output_tex:
             ]
         )
         print("\\midrule", file=f)
-
-        # invert and scale metrics
-        for lang in langs:
-            for metric in metrics:
-                if metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy", }:
-                    pass
-                elif metric in {"LinguaPy"}:
-                    for system in data[lang].keys():
-                        data[lang][system][metric] = - \
-                            data[lang][system][metric]
-                elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
-                    for system in data[lang].keys():
-                        data[lang][system][metric] = 100 * \
-                            data[lang][system][metric]
 
         system_order = [
             (v, k) for k, v in SYSTEM_TO_NAME.items()
