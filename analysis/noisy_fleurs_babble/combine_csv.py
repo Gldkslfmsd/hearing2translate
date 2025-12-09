@@ -195,31 +195,33 @@ if args.output_tex:
         )
         print("\\midrule", file=f)
 
-        # invert and scale metrics
-        for lang in langs:
-            for metric in metrics:
-                if metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy", }:
-                    for system in data[lang].keys():
-                        data[lang][system][metric] = 100 - 4*data[lang][system][metric]  if data[lang][system][metric] != "-" else "-"
-                elif metric in {"LinguaPy"}:
-                    for system in data[lang].keys():
-                        data[lang][system][metric] = - \
-                            data[lang][system][metric] if data[lang][system][metric] != "-" else "-"
-                elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
-                    for system in data[lang].keys():
-                        data[lang][system][metric] = 100 * \
-                            data[lang][system][metric] if data[lang][system][metric] != "-" else "-"
+        # # invert and scale metrics --> already handled before
+        # for lang in langs:
+        #     for metric in metrics:
+        #         if metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy", }:
+        #             for system in data[lang].keys():
+        #                 data[lang][system][metric] = 100 - 4*data[lang][system][metric]  if data[lang][system][metric] != "-" else "-"
+        #         elif metric in {"LinguaPy"}:
+        #             for system in data[lang].keys():
+        #                 data[lang][system][metric] = - \
+        #                     data[lang][system][metric] if data[lang][system][metric] != "-" else "-"
+        #         elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
+        #             for system in data[lang].keys():
+        #                 data[lang][system][metric] = 100 * \
+        #                     data[lang][system][metric] if data[lang][system][metric] != "-" else "-"
 
         system_order = [
             (v, k) for k, v in SYSTEM_TO_NAME.items()
             if k in data[langs[0]].keys()
         ]
         for system, system_k in system_order:
+
             printtex(
                 system,
                 *[
                     "" if lang == "" else
                     "-" if system_k == "canary-v2" and lang in {"en-zh", "zh-en"} else
+                    "-" if system_k.endswith(" canary-v2") and lang in {"zh-en"} else
                     color_cell(data[lang][system_k][metric], metric)
                     for metric in metrics
                     for lang in langs + [""]
