@@ -5,10 +5,16 @@ Optionally also outputs a rendered LaTeX table.
 Example usage: ```
 python3 analysis/acl6060-short/combine_csv.py \
     -i analysis/acl6060-short/acl6060_*.csv \
-    -oc analysis/acl6060-short/wmt_combined2.csv \
-    -ot analysis/acl6060-short/wmt_combined2.tex
+    -oc {path-to-your-home}/acl6060_combined.csv \
+    -ot {path-to-your-home}/acl6060_combined.tex
 
 ```
+or
+
+python3 analysis/acl6060-short/combine_csv.py \
+    -i analysis/acl6060-short/diff_*.csv \
+    -oc {path-to-your-home}/acl6060_diff_combined.csv \
+    -ot {path-to-your-home}/acl6060_diff_combined.tex
 """
 
 import argparse
