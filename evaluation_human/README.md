@@ -13,6 +13,8 @@ mv ./evaluation_human/hearing2translate-v1/ ~/pearmut/data_vm/hearing2translate-
 # run from ~ or some similar place ideally
 
 cd evaluation_human
+# use older version of pearmut with legacy data format
+pip install "pearmut==0.2.11"
 pearmut add hearing2translate-v1/hearing2translate-v1.json
 pearmut run
 ```
