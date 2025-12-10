@@ -2,7 +2,8 @@
 Combines multiple CSV files together into a single file (grouped by metrics) that can be used in GSheet.
 Optionally also outputs a rendered LaTeX table.
 
-Example usage: ```
+Example usage: 
+``` # for absolute scores
 python3 analysis/acl6060-short/combine_csv.py \
     -i analysis/acl6060-short/acl6060_*.csv \
     -oc {path-to-your-home}/acl6060_combined.csv \
@@ -10,11 +11,12 @@ python3 analysis/acl6060-short/combine_csv.py \
 
 ```
 or
-
+``` # for score diffs
 python3 analysis/acl6060-short/combine_csv.py \
     -i analysis/acl6060-short/diff_*.csv \
     -oc {path-to-your-home}/acl6060_diff_combined.csv \
     -ot {path-to-your-home}/acl6060_diff_combined.tex
+```    
 """
 
 import argparse
