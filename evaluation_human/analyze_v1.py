@@ -55,7 +55,7 @@ for lang, items in data_per_user.items():
         for model, annotation in zip(item["item"][0]["models"], item["annotations"][0]):
             model_scores[model][lang].append(annotation["score"])
 
-langs_all = ["ende1", "enes1", "enit1", "enzh1", "ennl1", "deen1", "esen1", "iten1", "nlen1"]
+langs_all = ["ende1", "enes1", "enit1", "enzh1", "ennl1", "deen1", "esen1", "iten1"]
 
 MODEL_TO_NAME = {
     "seamlessm4t": r"\cellcolor{sfmcolor} \hspace{-1mm}\seamlessfixed",
