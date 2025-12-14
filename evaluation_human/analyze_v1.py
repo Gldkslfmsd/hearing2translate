@@ -59,9 +59,10 @@ langs_all = ["ende1", "enes1", "enit1", "enzh1", "ennl1", "deen1", "esen1", "ite
 
 MODEL_TO_NAME = {
     "seamlessm4t": r"\cellcolor{sfmcolor} \hspace{-1mm}\seamlessfixed",
-    "aya_canary-v2":  r"\cellcolor{cascadecolor} \canary + \aya",
+    "aya_canary-v2": r"\cellcolor{cascadecolor} \canary + \aya",
     "voxtral-small-24b": r"\cellcolor{speechllmcolor}{\voxtral}",
 }
+
 
 def get_cell(value):
     color = "GenericColor"
@@ -70,19 +71,21 @@ def get_cell(value):
     color_v = max(0, min(100, color_v))
     return f"\\cellcolor{{{color}!{color_v:.0f}}} {value:.2f}"
 
+
 models = sorted(
     model_scores.keys(),
-    key=lambda x: np.mean([score for lang in langs_all for score in model_scores[x][lang]]
-), reverse=True)
+    key=lambda x: np.mean(
+        [score for lang in langs_all for score in model_scores[x][lang]]
+    ),
+    reverse=True,
+)
 
 with open("generated/humeval-scores.tex", "w") as f:
     print(r"\begin{tabular}{r" + "m{1.0cm}" * len(models) + "}", file=f)
     print(r"\toprule", file=f)
     print(
         "",
-        *[
-            MODEL_TO_NAME.get(model, model) for model in models
-        ],
+        *[MODEL_TO_NAME.get(model, model) for model in models],
         end=" \\\\\n",
         sep=" & ",
         file=f,
@@ -103,16 +106,12 @@ with open("generated/humeval-scores.tex", "w") as f:
         lang1, lang2 = lang[:2], lang[2:4]
         print(
             f"{lang1}-{lang2}",
-            *[
-                get_cell(np.mean(model_scores[model][lang]))
-                for model in models
-            ],
+            *[get_cell(np.mean(model_scores[model][lang])) for model in models],
             end=" \\\\\n",
             sep=" & ",
             file=f,
         )
 
-            
     print(r"\bottomrule", file=f)
     print(r"\end{tabular}", file=f)
 
@@ -126,29 +125,25 @@ for lang, items in data_per_user.items():
     for item in items:
         for model, annotation in zip(item["item"][0]["models"], item["annotations"][0]):
             model_errors[model] += [
-                error["category"]
-                for error in annotation["error_spans"]
+                error["category"] for error in annotation["error_spans"]
             ]
 
 model_errors_all = collections.Counter(
-    error
-    for errors in model_errors.values()
-    for error in errors
+    error for errors in model_errors.values() for error in errors
 )
 model_errors = {
-    model: collections.Counter(errors)
-    for model, errors in model_errors.items()
+    model: collections.Counter(errors) for model, errors in model_errors.items()
 }
 errors_total = {model: sum(errors.values()) for model, errors in model_errors.items()}
 
 with open("generated/humeval-errors.tex", "w") as f:
-    print(r"\begin{tabular}{@{}r@{\hspace{2mm}}" + "m{1.0cm}" * len(models) + "}", file=f)
+    print(
+        r"\begin{tabular}{@{}r@{\hspace{2mm}}" + "m{1.0cm}" * len(models) + "}", file=f
+    )
     print(r"\toprule", file=f)
     print(
         "",
-        *[
-            MODEL_TO_NAME.get(model, model)  + r"\hspace{-4mm}" for model in models
-        ],
+        *[MODEL_TO_NAME.get(model, model) + r"\hspace{-4mm}" for model in models],
         end=" \\\\\n",
         sep=" & ",
         file=f,
@@ -157,8 +152,7 @@ with open("generated/humeval-errors.tex", "w") as f:
     for error_type, _ in model_errors_all.most_common():
         print(
             (
-                error_type
-                .replace("Inconsistent use of terminology", "Inconsistent")
+                error_type.replace("Inconsistent use of terminology", "Inconsistent")
                 .replace("Linguistic conventions", "Linguistic")
                 .replace("_", " ")
                 .title()
@@ -183,41 +177,175 @@ import scipy.stats
 import json
 import collections
 import statistics
+import numpy as np
 
 with open("hearing2translate-v1/annotations_metrics.json", "r") as f:
     data = json.load(f)
 
-def seg_level_perlang(data):
-    pass
+
+def is_constant(xs):
+    return all(x == xs[0] for x in xs)
 
 
-def syslevel_perlang(data):
-    model_avg = collections.defaultdict(list)
-    for score, human_score, system, sample_id in data:
-        model_avg[system].append( (score, human_score) )
-    model_avg_xy = [
-        (statistics.mean([x for x, y in v]), statistics.mean([y for x, y in v]))
-        for system, v in model_avg.items()
-    ]
-    return scipy.stats.kendalltau(
-        [x for x, y in model_avg_xy],
-        [y for x, y in model_avg_xy],
-        variant='b'
+def global_pearson(data):
+    if is_constant([human_score for score, human_score, system, sample_id in data]):
+        return 0.0
+    return scipy.stats.pearsonr(
+        [score for score, human_score, system, sample_id in data],
+        [human_score for score, human_score, system, sample_id in data],
     ).correlation
 
 
-results_sys = collections.defaultdict(list)
-results_seg = collections.defaultdict(list)
+def global_spearman(data):
+    if is_constant([human_score for score, human_score, system, sample_id in data]):
+        return 0.0
+    return scipy.stats.spearmanr(
+        [score for score, human_score, system, sample_id in data],
+        [human_score for score, human_score, system, sample_id in data],
+    ).correlation
+
+
+def byitem_spearman(data):
+    agg_item = collections.defaultdict(list)
+    for score, human_score, system, sample_id in data:
+        agg_item[sample_id].append((score, human_score))
+
+    corrs = [
+        (
+            0
+            if is_constant([y for x, y in v])
+            else (
+                1
+                if is_constant([x for x, y in v])
+                else scipy.stats.spearmanr(
+                    [x for x, y in v],
+                    [y for x, y in v],
+                ).correlation
+            )
+        )
+        for sample_id, v in agg_item.items()
+    ]
+    return statistics.mean([x if not np.isnan(x) else 0 for x in corrs])
+
+
+results_byitem_spearman = collections.defaultdict(dict)
+results_global_pearson = collections.defaultdict(dict)
+results_global_spearman = collections.defaultdict(dict)
 
 for lang in {x["langs"] for x in data}:
     print(f"Language pair: {lang}")
-    for metric in ["xcomet_qe_score_strict", "metricx_qe_score_strict", "linguapy_score", "metricx_qe_normalized", "xcomet_qe_by_100"]:
-        data_xy = [(float(x[metric]), float(x["human_score"]), x["system"], x["sample_id"]) for x in data if x["langs"] == lang]
-        results_sys[metric].append(syslevel_perlang(data_xy))
-        results_seg[metric].append(seg_level_perlang(data_xy))
+    for metric in ["xcomet_qe_score_strict", "metricx_qe_score_strict"]:
+        data_xy = [
+            (float(x[metric]), float(x["human_score"]), x["system"], x["sample_id"])
+            for x in data
+            if x["langs"] == lang
+        ]
+        if metric == "metricx_qe_score_strict":
+            # invert scores for MetricX strict
+            data_xy = [(-x, y, s, i) for x, y, s, i in data_xy]
+        results_byitem_spearman[metric][lang] = byitem_spearman(data_xy)
+        results_global_pearson[metric][lang] = global_pearson(data_xy)
+        results_global_spearman[metric][lang] = global_spearman(data_xy)
+
+results_all = [
+    results_global_pearson,
+    results_byitem_spearman,
+    # results_global_spearman,
+]
 
 
-for metric in results_sys.keys():
-    print(f"Metric: {metric}")
-    print(f"  Sys-level Kendall's tau: {np.mean(results_sys[metric]):.4f} ± {np.std(results_sys[metric]):.4f}")
-    print(f"  Seg-level Kendall's tau: {np.mean(results_seg[metric]):.4f} ± {np.std(results_seg[metric]):.4f}")
+def get_cell1(value):
+    color = "GenericColor"
+    minv, maxv = 0, 0.2
+    color_v = ((value - minv) / (maxv - minv)) * 100
+    color_v = max(0, min(100, color_v))
+    prefix = r"\phantom{-}" if value >= 0 else ""
+    return f"\\cellcolor{{{color}!{color_v:.0f}}} {prefix}{value:.3f}"
+
+
+def get_cell2(value):
+    color = "GenericColor"
+    minv, maxv = 0.2, 0.6
+    color_v = ((value - minv) / (maxv - minv)) * 100
+    color_v = max(0, min(100, color_v))
+    return f"\\cellcolor{{{color}!{color_v:.0f}}} \\phantom{{-}}{value:.3f}"
+
+
+with open("generated/humeval-correlations.tex", "w") as f:
+    print(r"\begin{tabular}{r" + "p{0.9cm}" * 4 + "}", file=f)
+    print(r"\toprule", file=f)
+    print(
+        "",
+        *[
+            f"\\multicolumn{{2}}{{c}}{{{metric}}}"
+            for metric in [r"\cometstrict", r"\metricxstrict"]
+        ],
+        end=" \\\\\n",
+        sep=" & ",
+        file=f,
+    )
+    print(
+        "",
+        *[
+            corr_type
+            for metric in [r"\cometstrict", r"\metricxstrict"]
+            for corr_type in ["global", "item"]
+        ],
+        end=" \\\\\n",
+        sep=" & ",
+        file=f,
+    )
+    print(r"\midrule", file=f)
+
+    print(
+        f"Average",
+        *[
+            (
+                get_cell2(
+                    statistics.mean(
+                        [results[metric][lang] for lang in results[metric].keys()]
+                    )
+                )
+                if results_i == 0
+                else get_cell1(
+                    statistics.mean(
+                        [results[metric][lang] for lang in results[metric].keys()]
+                    )
+                )
+            )
+            for metric in ["xcomet_qe_score_strict", "metricx_qe_score_strict"]
+            for results_i, results in enumerate(results_all)
+        ],
+        end=" \\\\\n",
+        sep=" & ",
+        file=f,
+    )
+    print(r"\\[-0.3em]", file=f)
+
+    for lang in [
+        "en-de",
+        "en-es",
+        "en-it",
+        "en-zh",
+        "en-nl",
+        "de-en",
+        "es-en",
+        "it-en",
+    ]:
+        print(
+            f"{lang}",
+            *[
+                (
+                    get_cell2(results[metric][lang])
+                    if results_i == 0
+                    else get_cell1(results[metric][lang])
+                )
+                for metric in ["xcomet_qe_score_strict", "metricx_qe_score_strict"]
+                for results_i, results in enumerate(results_all)
+            ],
+            end=" \\\\\n",
+            sep=" & ",
+            file=f,
+        )
+    print(r"\bottomrule", file=f)
+    print(r"\end{tabular}", file=f)
