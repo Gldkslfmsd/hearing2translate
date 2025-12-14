@@ -108,5 +108,5 @@ campaign = {
     "data": tasks_users,
 }
 
-with open("evaluation_human/hearing2translate-v1/hearing2translate-v1.json", "w") as f:
+with open("evaluation_human/hearing2translate-v1/campaign.json", "w") as f:
     json.dump(campaign, f, indent=2, ensure_ascii=False)

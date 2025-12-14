@@ -2,7 +2,7 @@
 
 import json
 
-with open("generated/hearing2translate-v1-annotations.json", "r") as f:
+with open("hearing2translate-v1/annotations.json", "r") as f:
     data = json.load(f)["hearing2translate-v1"]
 
 # %%
@@ -173,3 +173,51 @@ with open("generated/humeval-errors.tex", "w") as f:
         )
     print(r"\bottomrule", file=f)
     print(r"\end{tabular}", file=f)
+
+
+# %%
+
+# analyze correlations with metrics
+
+import scipy.stats
+import json
+import collections
+import statistics
+
+with open("hearing2translate-v1/annotations_metrics.json", "r") as f:
+    data = json.load(f)
+
+def seg_level_perlang(data):
+    pass
+
+
+def syslevel_perlang(data):
+    model_avg = collections.defaultdict(list)
+    for score, human_score, system, sample_id in data:
+        model_avg[system].append( (score, human_score) )
+    model_avg_xy = [
+        (statistics.mean([x for x, y in v]), statistics.mean([y for x, y in v]))
+        for system, v in model_avg.items()
+    ]
+    return scipy.stats.kendalltau(
+        [x for x, y in model_avg_xy],
+        [y for x, y in model_avg_xy],
+        variant='b'
+    ).correlation
+
+
+results_sys = collections.defaultdict(list)
+results_seg = collections.defaultdict(list)
+
+for lang in {x["langs"] for x in data}:
+    print(f"Language pair: {lang}")
+    for metric in ["xcomet_qe_score_strict", "metricx_qe_score_strict", "linguapy_score", "metricx_qe_normalized", "xcomet_qe_by_100"]:
+        data_xy = [(float(x[metric]), float(x["human_score"]), x["system"], x["sample_id"]) for x in data if x["langs"] == lang]
+        results_sys[metric].append(syslevel_perlang(data_xy))
+        results_seg[metric].append(seg_level_perlang(data_xy))
+
+
+for metric in results_sys.keys():
+    print(f"Metric: {metric}")
+    print(f"  Sys-level Kendall's tau: {np.mean(results_sys[metric]):.4f} ± {np.std(results_sys[metric]):.4f}")
+    print(f"  Seg-level Kendall's tau: {np.mean(results_seg[metric]):.4f} ± {np.std(results_seg[metric]):.4f}")
