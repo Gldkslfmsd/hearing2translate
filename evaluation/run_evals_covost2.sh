@@ -1,15 +1,4 @@
-export HF_HOME=""
-export HF_HUB_CACHE="$HF_HOME/hub"
-export TRANSFORMERS_CACHE="$HF_HOME/transformers"
-export DATASETS_CACHE="$HF_HOME/datasets"
-
-export METRICX_CK_NAME='' 
-export METRICX_TOKENIZER=''
-export XCOMET_CK_NAME=''
-export GlotLID_PATH=''
-
-readonly BASE_PATH="/path_to/hearing2translate"
-readonly SAVING_BASE_DIR="./output_evals/covost2"
+SAVING_BASE_DIR="./output_evals/covost2"
 
 # ref_free_only for language pairs with NO references!!
 # --- Configuration ---

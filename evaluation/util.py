@@ -14,13 +14,16 @@ from dataclasses import dataclass, asdict
 from typing import List, Dict, Any, Optional
 
 # note that downloading Comet models requires HF token and gated access
+# ---------------
+# Optional models
 COMET_CK_NAME=''
 COMET_KIWI_CK_NAME=''
+GlotLID_PATH = ''
+# ---------------
 
 XCOMET_CK_NAME=os.environ.get("XCOMET_CK_NAME")
 METRICX_CK_NAME = os.environ.get("METRICX_CK_NAME")
 METRICX_TOKENIZER = os.environ.get("METRICX_TOKENIZER")
-GlotLID_PATH = os.environ.get("GLOTLID_PATH")
 
 MAPPING_TO_FASTTEXT_LABEL = {
     'it': 'ita_Latn', 'es':'spa_Latn', 'de':'deu_Latn', 'zh':'cmn', 

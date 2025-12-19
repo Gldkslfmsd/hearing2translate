@@ -1,13 +1,7 @@
 .DS_Store
 */.DS_Store
 .ipynb_checkpoints/
-manifests/cs_fleurs/data
 __pycache__/
 *.egg-info/
 build/
 audio/
-manifests/elitr-long
-manifests/edacc
-manifests/mcif-short/tmp
-manifests/mcif/_evaluate.py
-analysis/acl6060-short/norm_metricx.py

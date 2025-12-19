@@ -9,7 +9,7 @@ from pathlib import Path
 # does not like doing submodules. This should probably be changed!!!
 import sys
 sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from data_schema import InputJson, DatasetType
+from manifests.data_schema import InputJson, DatasetType
 
 import jsonlines
 from tqdm import tqdm

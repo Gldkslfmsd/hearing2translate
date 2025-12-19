@@ -1,22 +1,11 @@
-export HF_HOME=""
-export HF_HUB_CACHE="$HF_HOME/hub"
-export TRANSFORMERS_CACHE="$HF_HOME/transformers"
-export DATASETS_CACHE="$HF_HOME/datasets"
-
-export METRICX_CK_NAME='' 
-export METRICX_TOKENIZER=''
-export XCOMET_CK_NAME=''
-export GlotLID_PATH=''
-
 # --- Configuration ---
 # Define systems and pairs. The pairs use the primary format (with a hyphen)
-readonly SYSTEMS=('voxtral-small-24b' 'owsm4.0-ctc' 'whisper' 'qwen2audio-7b' 'phi4multimodal' 'desta2-8b' 'canary-v2' 'seamlessm4t' 'spirelm' 'gemma_canary-v2' 'gemma_seamlessm4t' 'gemma_whisper')
-readonly DIRECTION_PAIRS=('en-de' 'de-en' 'en-es' 'es-en' 'en-fr' 'fr-en' 'en-it' 'it-en' 'pt-en' 'en-pt' 'en-zh' 'zh-en' 'en-nl' 'nl-en')
+SYSTEMS=('voxtral-small-24b' 'owsm4.0-ctc' 'whisper' 'qwen2audio-7b' 'phi4multimodal' 'desta2-8b' 'canary-v2' 'seamlessm4t' 'spirelm' 'gemma_canary-v2' 'gemma_seamlessm4t' 'gemma_whisper')
+DIRECTION_PAIRS=('en-de' 'de-en' 'en-es' 'es-en' 'en-fr' 'fr-en' 'en-it' 'it-en' 'pt-en' 'en-pt' 'en-zh' 'zh-en' 'en-nl' 'nl-en')
 
 # Define constant base paths.
-readonly EVAL_MODE="ref_free_and_ref_based"
-readonly BASE_PATH="/path_to/hearing2translate"
-readonly SAVING_BASE_DIR="./output_evals/noisy_fleurs_babble"
+EVAL_MODE="ref_free_and_ref_based"
+SAVING_BASE_DIR="./output_evals/noisy_fleurs_babble"
 
 # --- Main Loops ---
 for system in "${SYSTEMS[@]}"; do

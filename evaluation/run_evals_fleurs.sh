@@ -1,22 +1,11 @@
-export HF_HOME=""
-export HF_HUB_CACHE="$HF_HOME/hub"
-export TRANSFORMERS_CACHE="$HF_HOME/transformers"
-export DATASETS_CACHE="$HF_HOME/datasets"
-
-export METRICX_CK_NAME='' 
-export METRICX_TOKENIZER=''
-export XCOMET_CK_NAME=''
-export GlotLID_PATH=''
-
 # --- Configuration ---
 # Define systems and pairs. The pairs use the primary format (with a hyphen)
-readonly SYSTEMS=('qwen2audio-7b' 'phi4multimodal' 'desta2-8b' 'canary-v2' 'seamlessm4t' 'whisper' 'voxtral-small-24b' 'spirelm' 'owsm4.0-ctc' 'tower_whisper' 'tower_owsm4.0-ctc' 'gemma_canary-v2' 'tower_seamlessm4t' 'gemma_seamlessm4t' 'gemma_owsm4.0-ctc' 'tower_canary-v2' 'gemma_whisper' 'aya_whisper' 'aya_canary-v2' 'aya_seamlessm4t' 'aya_owsm4.0-ctc')
-readonly DIRECTION_PAIRS=('en-de' 'de-en' 'en-es' 'es-en' 'en-fr' 'fr-en' 'en-it' 'it-en' 'pt-en' 'en-pt' 'en-zh' 'zh-en' 'en-nl')
+SYSTEMS=('qwen2audio-7b' 'phi4multimodal' 'desta2-8b' 'canary-v2' 'seamlessm4t' 'whisper' 'voxtral-small-24b' 'spirelm' 'owsm4.0-ctc' 'tower_whisper' 'tower_owsm4.0-ctc' 'gemma_canary-v2' 'tower_seamlessm4t' 'gemma_seamlessm4t' 'gemma_owsm4.0-ctc' 'tower_canary-v2' 'gemma_whisper' 'aya_whisper' 'aya_canary-v2' 'aya_seamlessm4t' 'aya_owsm4.0-ctc')
+DIRECTION_PAIRS=('en-de' 'de-en' 'en-es' 'es-en' 'en-fr' 'fr-en' 'en-it' 'it-en' 'pt-en' 'en-pt' 'en-zh' 'zh-en' 'en-nl')
 
 # Define constant base paths.
-readonly EVAL_MODE="ref_free_and_ref_based"
-readonly BASE_PATH="/path_to/hearing2translate"
-readonly SAVING_BASE_DIR="./output_evals/fleurs"
+EVAL_MODE="ref_free_and_ref_based"
+SAVING_BASE_DIR="./output_evals/fleurs"
 
 # --- Main Loops ---
 for system in "${SYSTEMS[@]}"; do

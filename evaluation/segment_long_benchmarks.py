@@ -133,8 +133,6 @@ def main():
 
     # --- 2. Pre-process and Merge Data ---
     logging.info("Preprocessing and merging data...")
-    # OPTIMIZATION: Create an efficient lookup for short references by document ID.
-    # This avoids a very slow O(N*M) loop.
     short_manifest_by_doc = defaultdict(list)
     for item in short_manifest:
         short_manifest_by_doc[item['doc_id']].append(item)
