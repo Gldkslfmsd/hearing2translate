@@ -1,4 +1,4 @@
-BASE_PATH="/net/tscratch/people/plgzuefle/noisy_speech"
+BASE_PATH=""
 
 python3 $BASE_PATH/hearing2translate/analysis/noisy_fleurs_babble/combine_csv.py \
     -i $BASE_PATH/hearing2translate/analysis/noisy_fleurs_babble/noisy_fleurs_*.csv \
