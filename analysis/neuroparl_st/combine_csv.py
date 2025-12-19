@@ -1,26 +1,3 @@
-#import argparse
-#import csv
-#import collections
-#import math
-#
-#args = argparse.ArgumentParser()
-#args.add_argument("-i", "--input", type=str, nargs="+", required=True, help="Input CSV files")
-#args.add_argument("-o", "--output", type=str, required=True, help="Output CSV file")
-#args = args.parse_args()
-#
-#LANG_ORDER = [
-#    "en-es", "en-fr", "en-pt", "en-it", "en-de", "en-nl", "en-zh",
-#    "es-en", "fr-en", "pt-en", "it-en", "de-en"
-#]
-#
-#METRICS_ORDER = [
-#    "LinguaPy",
-#    "metricx_qe_score",
-#    "QEMetricX_24-Strict-linguapy",
-#    "xcomet_qe_score",
-#    "XCOMET-QE-Strict-linguapy",
-#]
-#
 SYSTEM_ORDER = [
     # --- SFM ---
     "whisper",
@@ -53,73 +30,6 @@ SYSTEM_ORDER = [
     "spirelm",
 ]
 SYSTEM_ORDER = [system.replace("_", " ") for system in SYSTEM_ORDER]
-#
-#def safe_float(x):
-#    try:
-#        x = x.strip()
-#        return float(x) if x != "" else math.nan
-#    except Exception:
-#        return math.nan
-#
-#data = collections.defaultdict(lambda: collections.defaultdict(dict))
-#metrics = None
-#
-#for fname in args.input:
-#    langs = fname.split("/")[-1].split(".")[0].split("_", 1)[1].replace("_", "-")
-#    print(f"Processing {langs}: {fname}")
-#    with open(fname, "r") as f:
-#        reader = csv.DictReader(f)
-#        for row in reader:
-#            system = row.pop("system")
-#            # Store metrics with safe float conversion
-#            data[langs][system] = {k.strip(): safe_float(v) for k, v in row.items()}
-#            if metrics is None:
-#                metrics = [k.strip() for k in row.keys()]
-#
-#langs = [l for l in LANG_ORDER if l in data]
-#
-#if not langs:
-#    raise ValueError("No matching language pairs found in input files.")
-#
-##all_systems = sorted({s for l in langs for s in data[l].keys()})
-##all_systems = sorted({s for l in langs for s in data[l].keys()})
-##available_systems = {s for l in langs for s in data[l].keys()}
-##all_systems = [s for s in SYSTEM_ORDER if s in available_systems]
-#all_systems = [s for s in SYSTEM_ORDER]
-##all_systems += sorted(available_systems - set(all_systems))
-#
-#with open(args.output, "w", newline="") as f:
-#    def printcsv(*args):
-#        print(*args, sep=",", file=f)
-#
-#    #header
-#    printcsv(
-#        "system",
-#        *[
-#            x
-#            for metric in metrics
-#            for x in [metric] + ["" for _ in langs[:-1]]
-#        ]
-#    )
-#
-#    #lang code
-#    printcsv(
-#        "",
-#        *[
-#            lang
-#            for _ in metrics
-#            for lang in langs
-#        ]
-#    )
-#
-#    for system in all_systems:
-#        row = []
-#        for metric in metrics:
-#            for lang in langs:
-#                row.append(data[lang].get(system, {}).get(metric, ""))
-#        printcsv(system, *row)
-#
-#print(f"Combined CSV written to {args.output}")
 
 
 
@@ -153,24 +63,18 @@ args = args.parse_args()
 
 data = collections.defaultdict(lambda: collections.defaultdict(dict))
 metrics = None
-#LANG_ORDER = [f'{x}-en' for x in ("es","de","fr","zh")]
 LANG_ORDER = [
-    "en-es", "en-fr", "en-pt", "en-it", "en-de", "en-nl", "en-zh",
-    "es-en", "fr-en", "pt-en", "it-en", "de-en"
+    "en-es", "en-fr","en-it"
 ]
 
 all_systems = []
 for fname in args.input:
-    #langs = fname.split( "/")[-1].split(".")[0].split("_", 1)[1].replace("_", "-")
-    #langs = "-".join(fname.split("/")[-1].split(".")[0].split("_")[2:])
     langs = fname.split("/")[-1].split(".")[0].split("_", 1)[1].replace("_", "-")
     with open(fname, "r") as f:
         reader = csv.DictReader(f)
         for i,row in enumerate(reader):
             system = row.pop("system").replace("_", " ")
             all_systems.append(system)
-            
-            #row.pop("_merge", None)
             
             def to_float(x):
                 if x is None or x == "":
@@ -194,8 +98,6 @@ print(LANG_ORDER)
 langs = [
     l for l in LANG_ORDER if l in data.keys()
 ]
-
-#all_systems.append("spirelm")
 
 with open(args.output_csv, "w") as f:
     def printcsv(*args):
@@ -222,10 +124,17 @@ with open(args.output_csv, "w") as f:
             for lang in langs
         ]
     )
+
+    for system in SYSTEM_ORDER:
+        for lang in langs:
+            for metric in metrics:
+                print(system, lang, metric)
+                print(data[lang][system][metric])
+
+
     for system in SYSTEM_ORDER:
         printcsv(
             system,
-            #*row_csv
             *[
                 data[lang][system][metric]
                 for metric in metrics
@@ -234,9 +143,8 @@ with open(args.output_csv, "w") as f:
         )
 
 METRIC_TO_NAME = {
-    "LinguaPy": "LinguaPy",
-    "QEMetricX_24-Strict-linguapy": r"\metricxstrictiny",
-    "XCOMET-QE-Strict-linguapy": r"\cometstrictiny",
+    "accuracy_ne": r"\neacc",
+    "accuracy_term": r"\termacc",
 }
 metrics = METRIC_TO_NAME.keys()
 
@@ -291,18 +199,17 @@ if args.output_tex:
                 "QEMetricX_24-Strict-linguapy": "Chartreuse3",
                 "xcomet_qe_score": "DarkSlateGray3",
                 "XCOMET-QE-Strict-linguapy": "DarkSlateGray3",
+                "accuracy_ne" : "Chartreuse3",
+                "accuracy_term": "DarkSlateGray3",
             }
 
             s = f"{value:.1f}"
-            if metric in {"LinguaPy"}:
-                color = "Brown3"
-                minv, maxv = 0, -20
-            elif metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy"}:
+            if metric in {"metricx_qe_score", "QEMetricX_24-Strict-linguapy", "accuracy_ne"}:
                 color = "Chartreuse3"
-                minv, maxv = 20, 80
-            elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy"}:
+                minv, maxv = 0, 85
+            elif metric in {"xcomet_qe_score", "XCOMET-QE-Strict-linguapy", "accuracy_term"}:
                 color = "DarkSlateGray3"
-                minv, maxv = 20, 80
+                minv, maxv = 0, 85
             color_v = ((value - minv) / (maxv - minv)) * 100
             color_v = max(0, min(100, color_v))
 
@@ -354,16 +261,12 @@ if args.output_tex:
             if k not in data[langs[0]].keys()
         ]
 
-        not_valid = lambda system, src, tgt : (system == "whisper" and src == "en") \
-                                                                                    or (system == "canary-v2" and src == "en" and tgt == "zh" ) \
-                                                                                    or (system == "canary-v2" and src == "zh") \
-                                                                                    or ( system == "spirelm" and tgt == "en") 
         for system, system_k in system_order:
             printtex(
                 system,
                 *[
                     "" if lang == "" else
-                    "-" if not_valid(system_k, *lang.split("-")) else
+                    "-" if system_k == "whisper" else
                     color_cell(data[lang][system_k][metric], metric)
                     for metric in metrics
                     for lang in langs + [""]
