@@ -1,3 +1,8 @@
+"""
+NOTE: this uses an older version of Pearmut that required some more setup and is
+distinct from modern Pearmut.
+"""
+
 import os
 import json
 import random
