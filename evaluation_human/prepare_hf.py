@@ -48,7 +48,7 @@ for line in data:
 
     line["src_ref"] = data_langs[(item["langs"], item["sample_id"])]["src_ref"]
     line["tgt"]["ref"] = data_langs[(item["langs"], item["sample_id"])]["tgt_ref"]
-    line["src_audio"] = data_langs[(item["langs"], item["sample_id"])]["src_audio"].removeprefix("/covost/audio/")
+    line["src_audio"] = data_langs[(item["langs"], item["sample_id"])]["src_audio"].removeprefix("/covost2/audio/")
 
     for action in line["actions"]:
         if "candidate" in action:
@@ -68,7 +68,7 @@ for line in data:
 # change order of keys
 data = [
     {
-        "src_audio": x["src_audio"],
+        "src_audio": "../manifests/covost2/audio/covost_" + x["src_audio"].split("/")[0] + "/" + x["src_audio"],
         "src_ref": x["src_ref"],
         "tgt": x["tgt"],
         "annotations": x["annotations"],
@@ -77,10 +77,12 @@ data = [
         "dataset": x["dataset"],
         "langs": x["langs"],
         "sample_id": x["sample_id"],
+        "src_audio_file": x["src_audio"],
     }
     for x in data
 ]
 
 # mark as train split
 dataset = Dataset.from_list(data, split="train")
+dataset = dataset.cast_column("src_audio", Audio(sampling_rate=16000))
 dataset.push_to_hub("zouharvi/hearing2translate-humeval")

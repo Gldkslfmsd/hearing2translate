@@ -18,3 +18,5 @@ pip install "pearmut==0.2.11"
 pearmut add hearing2translate-v1/hearing2translate-v1.json
 pearmut run
 ```
+
+The results with audios are compiled here online: [huggingface.co/datasets/zouharvi/hearing2translate-humeval](https://huggingface.co/datasets/zouharvi/hearing2translate-humeval).
