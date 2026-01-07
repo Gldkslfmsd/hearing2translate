@@ -3,8 +3,6 @@ import librosa
 
 def load_model():
     model = ASRModel.from_pretrained(model_name="nvidia/canary-1b-v2")
-    # downloaded in Dominik's dir:
-    #model = ASRModel.restore_from(restore_path="canaryv2/canary-1b-v2/canary-1b-v2.nemo")
     return model
 
 
