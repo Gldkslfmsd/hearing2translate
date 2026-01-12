@@ -14,7 +14,9 @@ python3 evaluation_human/prepare_v1.py
 # run from ~ or some similar place ideally
 
 cd evaluation_human
-pearmut add hearing2translate-v1/hearing2translate-v1.json
+# add our campaign
+pearmut add hearing2translate-v1/campaign.json
+# launch server
 pearmut run
 ```
 
