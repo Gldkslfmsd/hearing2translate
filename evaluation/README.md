@@ -81,9 +81,9 @@ print("T5 tokenizer model is downloaded to:", model_path)
 After downloading the necessary models, you need to set their paths as environment variables. All models are stored in $HF_HOME cache folder:
 
 ```bash
-export METRICX_CK_NAME='${HF_HOME}/hub/models--google--metricx-24-hybrid-xxl-v2p6/snapshots/0ff238ccb517eb0b2998dd6d299528b040c5caec' 
-export METRICX_TOKENIZER='${HF_HOME}/hub/models--google--mt5-xxl/snapshots/e07c395916dfbc315d4e5e48b4a54a1e8821b5c0'
-export XCOMET_CK_NAME='${HF_HOME}/hub/models--Unbabel--XCOMET-XXL/snapshots/873bac1b1c461e410c4a6e379f6790d3d1c7c214/checkpoints/model.ckpt'
+export METRICX_CK_NAME="${HF_HOME}/hub/models--google--metricx-24-hybrid-xxl-v2p6/snapshots/0ff238ccb517eb0b2998dd6d299528b040c5caec" 
+export METRICX_TOKENIZER="${HF_HOME}/hub/models--google--mt5-xxl/snapshots/e07c395916dfbc315d4e5e48b4a54a1e8821b5c0"
+export XCOMET_CK_NAME="${HF_HOME}/hub/models--Unbabel--XCOMET-XXL/snapshots/873bac1b1c461e410c4a6e379f6790d3d1c7c214/checkpoints/model.ckpt"
 ```
 
 ### Output File Structure
